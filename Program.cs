@@ -9,17 +9,27 @@ namespace XPath
     {
         static void Main()
         {
-            const string inputFileName = "C:\\Tmp\\xpath\\122_.xml";
-            const string outputFileName = "C:\\Tmp\\xpath\\results.xml";
-            const string xpath = "//FlightSegmentReference[@ref='BA0117']/ancestor::AirlineOffer[PricedOffer/Associations/ApplicableFlight/FlightSegmentReference/@ref='BA1594']";
-
-            var nodes = ReadNodes(inputFileName, xpath);
-
-            var resultDocument = BuildResultDocument(nodes);
-
-            FormatAndWriteToFile(resultDocument, outputFileName);  
+            ProcessGroup("Default", "BA0173", "BA0174");
+            ProcessGroup("Humanitarian", "BA0173", "BA0174");
+            ProcessGroup("Published", "BA0173", "BA0174");
             
-            Console.WriteLine($"{nodes.Count} results saved to file {outputFileName}");
+            ProcessGroup("Default", "BA0177", "BA0176");
+            ProcessGroup("Humanitarian", "BA0177", "BA0176");
+            ProcessGroup("Published", "BA0177", "BA0176");
+            
+            ProcessGroup("Default", "BA0115", "BA0182");
+            ProcessGroup("Humanitarian", "BA0115", "BA0182");
+            ProcessGroup("Published", "BA0115", "BA0182");
+        }
+
+        private static void ProcessGroup(string name, string flight1, string flight2)
+        {
+            var inputFileName = $"C:\\Tmp\\xpath\\{name}.xml";
+            var outputFileName = $"C:\\Tmp\\xpath\\{name}_{flight1}_{flight2}.xml";
+            
+            var nodes = ReadNodes(inputFileName, flight1, flight2);
+            var resultDocument = BuildResultDocument(nodes);
+            FormatAndWriteToFile(resultDocument, outputFileName);
         }
 
         private static void FormatAndWriteToFile(XmlDocument resultDocument, string fileName)
@@ -68,8 +78,10 @@ namespace XPath
             return resultDocument;
         }
 
-        private static XmlNodeList ReadNodes(string fileName, string xpath)
+        private static XmlNodeList ReadNodes(string fileName, string flight1, string flight2)
         {
+            var xpath = $"//FlightSegmentReference[@ref='{flight1}']/ancestor::AirlineOffer[PricedOffer/Associations/ApplicableFlight/FlightSegmentReference/@ref='{flight2}']";
+            
             var document = new XmlDocument();
             document.Load(fileName);
 
